@@ -1,0 +1,115 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Face Match</title>
+<style>
+  body {
+    font-family: 'Arial, sans-serif';
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #camera {
+    width: 60%; /* Reduced webcam size */
+    height: auto;
+    border: 1px solid #ccc; /* Added border around webcam */
+    border-radius: 5px; /* Rounded border corners */
+  }
+  p {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  .button-container {
+    display: flex;
+    gap: 10px; /* Creates space between the buttons */
+  }
+  button {
+    font-size: 18px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: #fff;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  form {
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <p style="text-align: center;"><h4> Scan Your Face </h4> </p>
+  <video id="camera" width="640" height="480" autoplay></video>
+</div>
+
+<div class="button-container">
+  <button id="snap">Scan</button>
+  
+  <form method="POST" id="form">
+    {% csrf_token %}
+    <input type="hidden" name="image_data_base64" id="image_data_base64">
+    <button type="submit">Match Face</button>
+  </form>
+  <a style="text-align: center;" href="{% url 'account' %}"><button type="submit">Exit</button></a>
+</div>
+
+<script>
+  const video = document.getElementById('camera');
+  const canvas = document.createElement('canvas');
+  const snap = document.getElementById('snap');
+  const errorMsgElement = document.querySelector('span#error');
+
+  const constraints = {
+    audio: false,
+    video: {
+      width: 640, height: 480
+    }
+  };
+
+  async function init() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      handleSuccess(stream);
+    } catch (e) {
+      errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+    }
+  }
+
+  function handleSuccess(stream) {
+    window.stream = stream;
+    video.srcObject = stream;
+  }
+
+  snap.onclick = function() {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    document.getElementById('image_data_base64').value = canvas.toDataURL('image/jpeg');
+  };
+
+  document.getElementById('form').addEventListener('submit', function(e) {
+    if (!document.getElementById('image_data_base64').value) {
+      e.preventDefault();
+      alert('Please snap a photo before submitting.');
+    }
+  });
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>

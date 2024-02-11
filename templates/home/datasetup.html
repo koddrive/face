@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Face Dataset Setup</title>
+    <style>
+        body {
+            font-family: 'Arial, sans-serif';
+            background-color: #f8f9fa;
+            color: #343a40;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        video {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            width: 60%; /* Adjusted webcam size */
+            height: auto;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            width: 300px; /* Adjust width as necessary */
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px; /* Added margin */
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Photo Capture</h1>
+    <video id="video" width="600" height="480" autoplay></video>
+    <button id="capture">Capture</button>
+    <form method="post" enctype="multipart/form-data" id="upload-form">
+        {% csrf_token %}
+        <input type="text" name="name" id="name" placeholder="Name" required>
+        <input type="text" name="roll" id="roll" placeholder="Roll" required>
+        <input type="text" name="address" id="address" placeholder="Address" required>
+        <input type="hidden" name="image_data_base64" id="image_data_base64" required>
+        <button type="submit">Submit</button>
+        
+    </form>
+    <a style="text-align: center;" href="{% url 'main' %}"><button type="submit">Exit</button></a>
+
+    <script>
+       // JavaScript code for webcam access and photo capture
+const video = document.getElementById('video');
+const captureButton = document.getElementById('capture');
+const uploadButton = document.getElementById('upload'); // Add the Upload button
+const imageInput = document.getElementById('image_data_base64'); // Change the name attribute
+
+// Use navigator.mediaDevices.getUserMedia to access the webcam
+navigator.mediaDevices.getUserMedia({ video: true })
+    .then((stream) => {
+        video.srcObject = stream;
+        return video.play(); // Start playing the video
+    })
+    .catch((error) => {
+        console.error('Error accessing webcam:', error);
+    });
+
+// Modify the event listener for the Capture button
+captureButton.addEventListener('click', () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const imageData = canvas.toDataURL('image/jpeg'); // Change format if needed
+    imageInput.value = imageData;
+    uploadButton.style.display = 'block'; // Show the Upload button
+});
+
+    </script>
+</body>
+</html>

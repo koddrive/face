@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+    <title>Student Details</title>
+    <style>
+        body {
+            font-family: 'Arial, sans-serif';
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+        .student-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .student-details .text-info {
+            width: 60%;
+        }
+        .student-details .text-info p {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .student-details .text-info p span {
+            font-weight: bold;
+        }
+        .student-details img {
+            width: 150px; /* Adjust as needed */
+            height: auto;
+            border-radius: 5px;
+            margin-left: 20px; /* Added space between text and image */
+        }
+        .no-match {
+            text-align: center;
+            font-size: 24px;
+            color: red;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if details %}
+            <div class="student-details">
+                <div class="text-info">
+                    <p><span>Name:</span> {{ details.name }}</p>
+                    <p><span>Roll:</span> {{ details.roll }}</p>
+                    <p><span>Address:</span> {{ details.address }}</p>
+                </div>
+                <img src="{{ details.image_url }}" alt="Matched face image">  <!-- Display the matched image -->
+            </div>
+        {% else %}
+            <p class="no-match">No match found</p>
+        {% endif %}
+    </div>
+    <a style="text-align: center;" href="{% url 'account' %}"><button type="submit">Exit</button></a>
+</body>
+</html>
